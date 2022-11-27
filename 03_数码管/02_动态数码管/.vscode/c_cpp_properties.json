@@ -3,7 +3,7 @@
         {
             "name": "Target 1",
             "includePath": [
-                "d:\\embadded\\51scm-learning\\01_led\\01_点亮第一个led"
+                "d:\\embadded\\51scm-learning\\03_数码管\\02_动态数码管"
             ],
             "defines": [
                 "__C51__",

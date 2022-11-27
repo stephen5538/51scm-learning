@@ -1,0 +1,111 @@
+C51 COMPILER V9.54   MAIN                                                                  11/27/2022 15:55:22 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\dev\keil5for51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listin
+                    -gs\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          typedef unsigned int u16;
+   3          typedef unsigned char u8;
+   4          //数码管段码口
+   5          #define SMG_A_DP_PORT P0
+   6          //数码管位选信号控制脚
+   7          sbit LSA = P2 ^ 2;
+   8          sbit LSB = P2 ^ 3;
+   9          sbit LSC = P2 ^ 4;
+  10          
+  11          //共阴极数码管显示 0~F 的段码数据
+  12          u8 gsmg_code[17] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07,
+  13                              0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71};
+  14          
+  15          void delay_10us(u16 ten_us)
+  16          {
+  17   1          while (ten_us--)
+  18   1              ;
+  19   1      }
+  20          void smg_display()
+  21          {
+  22   1          u8 i = 0;
+  23   1          for (i = 0; i < 8; i++)
+  24   1          {
+  25   2              switch (i) //位选
+  26   2              {
+  27   3              case 0:
+  28   3                  LSC = 1;
+  29   3                  LSB = 1;
+  30   3                  LSA = 1;
+  31   3                  break;
+  32   3              case 1:
+  33   3                  LSC = 1;
+  34   3                  LSB = 1;
+  35   3                  LSA = 0;
+  36   3                  break;
+  37   3              case 2:
+  38   3                  LSC = 1;
+  39   3                  LSB = 0;
+  40   3                  LSA = 1;
+  41   3                  break;
+  42   3              case 3:
+  43   3                  LSC = 1;
+  44   3                  LSB = 0;
+  45   3                  LSA = 0;
+  46   3                  break;
+  47   3              case 4:
+  48   3                  LSC = 0;
+  49   3                  LSB = 1;
+  50   3                  LSA = 1;
+  51   3                  break;
+  52   3              case 5:
+  53   3                  LSC = 0;
+  54   3                  LSB = 1;
+C51 COMPILER V9.54   MAIN                                                                  11/27/2022 15:55:22 PAGE 2   
+
+  55   3                  LSA = 0;
+  56   3                  break;
+  57   3              case 6:
+  58   3                  LSC = 0;
+  59   3                  LSB = 0;
+  60   3                  LSA = 1;
+  61   3                  break;
+  62   3              case 7:
+  63   3                  LSC = 0;
+  64   3                  LSB = 0;
+  65   3                  LSA = 0;
+  66   3                  break;
+  67   3              default:
+  68   3                  break;
+  69   3              }
+  70   2              SMG_A_DP_PORT = gsmg_code[i]; //传送段选数据
+  71   2              delay_10us(100);              //延时一段时间，等待显示稳定
+  72   2              // SMG_A_DP_PORT = 0x00;         //消隐
+  73   2          }
+  74   1      }
+  75          
+  76          int main()
+  77          {
+  78   1      
+  79   1          while (1)
+  80   1          {
+  81   2              smg_display();
+  82   2          }
+  83   1          return 0;
+  84   1      }
+*** WARNING C294 IN LINE 83 OF main.c: unreachable code
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    122    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =     17    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)
