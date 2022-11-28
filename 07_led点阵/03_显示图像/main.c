@@ -6,6 +6,10 @@ sbit SRCLK = P3 ^ 6; //移位寄存器时钟输入
 sbit RCLK = P3 ^ 5;  //存储寄存器时钟输入
 sbit SER = P3 ^ 4;
 #define LEDDZ_COL_PORT P0 //点阵列控制端口
+
+u8 gled_row[8] = {0x38, 0x7C, 0x7E, 0x3F, 0x3F, 0x7E, 0x7C, 0x38};
+u8 gled_col[8] = {0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe};
+
 void delay_10us(u16 ten_us)
 {
     while (ten_us--)
@@ -31,11 +35,16 @@ void hc595_write_data(u8 dat)
 
 int main()
 {
-    //将 LED 点阵左边第一列设置为 0，即 LED 阴极为低电平，其余列为 1，即高电平
-    LEDDZ_COL_PORT = 0x7f;
+    u8 i = 0;
     while (1)
-    { //将 LED 点阵上边第一行设置为 1，即 LED 阳极为高电平，其余行为 0，即低电平
-        hc595_write_data(0x80);
+    {
+        for (i = 0; i < 8; i++)
+        {
+            hc595_write_data(gled_row[i]);
+            LEDDZ_COL_PORT = gled_col[i];
+            delay_10us(100);
+            hc595_write_data(0);
+        }
     }
 
     return 0;
