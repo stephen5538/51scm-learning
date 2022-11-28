@@ -20,9 +20,9 @@ void delay_ms(u16 ms)
 
 // 74HC595 控制管脚
 //移位寄存器时钟输入
-sbit SRCLK = P3 ^ 6;
+sbit SRCLK595 = P3 ^ 6;
 //存储寄存器时钟输入
-sbit RCLK = P3 ^ 5;
+sbit RCLK595 = P3 ^ 5;
 //串行数据输入
 sbit SER = P3 ^ 4;
 //点阵列控制端口
@@ -33,6 +33,7 @@ u8 ghc595_buf[8] = {0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80};
 void ghc595_send_byte(u8 dat)
 {
     u8 i;
+	  RCLK595 = 0; //存储寄存器时钟上升沿将前面写入到寄存器的数据输出
     //循环将一个字节的每个byte传输
     //由高位到地位传输
     for (i = 0; i < 8; i++)
@@ -41,15 +42,15 @@ void ghc595_send_byte(u8 dat)
         SER = dat >> 7;
         // dat 左移一位 将次低位放入最高位
         dat = dat << 1;
-        SRCLK = 0;
+        SRCLK595 = 0;
         delay_10us(1);
-        SRCLK = 1;
+        SRCLK595 = 1;
         ; //移位寄存器时钟上升沿将端口数据送入寄存器中
         delay_10us(1);
     }
-    RCLK = 0;
+    RCLK595 = 1;
     delay_10us(1);
-    RCLK = 1; //存储寄存器时钟上升沿将前面写入到寄存器的数据输出
+   
 }
 
 int main()

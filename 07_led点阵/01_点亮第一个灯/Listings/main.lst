@@ -1,4 +1,4 @@
-C51 COMPILER V9.54   MAIN                                                                  11/27/2022 16:34:34 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  11/28/2022 19:14:02 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
@@ -11,97 +11,59 @@ line level    source
    1          #include <reg52.h>
    2          typedef unsigned int u16;
    3          typedef unsigned char u8;
-   4          //独立按键的引脚
-   5          sbit KEY1 = P3 ^ 1;
-   6          sbit KEY2 = P3 ^ 0;
-   7          sbit KEY3 = P3 ^ 2;
-   8          sbit KEY4 = P3 ^ 3;
-   9          // LED1引脚
-  10          sbit LED1 = P2 ^ 0;
-  11          //独立按键按下的键值
-  12          #define KEY1_PRESS 1
-  13          #define KEY2_PRESS 2
-  14          #define KEY3_PRESS 3
-  15          #define KEY4_PRESS 4
-  16          #define KEY_UNPRESS 0
-  17          
-  18          void delay_10us(u16 ten_us)
-  19          {
-  20   1          while (ten_us--)
-  21   1          {
-  22   2              /* code */
-  23   2          }
-  24   1      }
-  25          /**
-  26           * @brief
-  27           *
-  28           * @param mode mode=1 连续扫描按键
-  29           *             mode=0 单次扫描按键
-  30           * @return u8
-  31           */
-  32          u8 key_scan(u8 mode)
-  33          {
-  34   1          //static 全局变量
-  35   1          static u8 key = 1;
-  36   1          //连续扫描按键
-  37   1          if (mode)
-  38   1          {
-  39   2              key = 1;
+   4          //定义 74HC595 控制管脚
+   5          sbit SRCLK595 = P3 ^ 6; //移位寄存器时钟输入
+   6          sbit RCLK595 = P3 ^ 5;  //存储寄存器时钟输入
+   7          sbit SER = P3 ^ 4;
+   8          #define LEDDZ_COL_PORT P0 //点阵列控制端口
+   9          void delay_10us(u16 ten_us)
+  10          {
+  11   1          while (ten_us--)
+  12   1          {
+  13   2          }
+  14   1      }
+  15          void hc595_write_data(u8 dat)
+  16          {
+  17   1          u8 i = 0;
+  18   1          RCLK595=0;
+  19   1          for (i = 0; i < 8; i++) //循环 8 次即可将一个字节写入寄存器中
+  20   1          {
+  21   2              SER = dat >> 7; //优先传输一个字节中的高位
+  22   2              dat <<= 1;      //将低位移动到高位
+  23   2              SRCLK595 = 0;
+  24   2              delay_10us(1);
+  25   2              SRCLK595 = 1;
+  26   2              delay_10us(1); //移位寄存器时钟上升沿将端口数据送入寄存器中
+  27   2          }
+  28   1          RCLK595 = 1;
+  29   1          delay_10us(1);
+  30   1          //RCLK595 = 0; //存储寄存器时钟上升沿将前面写入到寄存器的数据输出
+  31   1      }
+  32          
+  33          int main()
+  34          {
+  35   1          //将 LED 点阵左边第一列设置为 0，即 LED 阴极为低电平，其余列为 1，即高电�
+             -�
+  36   1          LEDDZ_COL_PORT = 0x7f;//0111 1111
+  37   1          while (1)
+  38   1          { //将 LED 点阵上边第一行设置为 1，即 LED 阳极为高电平，其余行为 0，即低电
+             -平
+  39   2              hc595_write_data(0x80);//1000 0000
   40   2          }
-  41   1          if (key == 1 && (KEY1 == 0 || KEY2 == 0 || KEY3 == 0 || KEY4 == 0))
-  42   1          {
-  43   2              delay_10us(1000);
-  44   2              key = 0;
-  45   2              if (KEY1 == 0)
-  46   2              {
-  47   3                  return KEY1_PRESS;
-  48   3              }
-  49   2              if (KEY2 == 0)
-  50   2              {
-  51   3                  return KEY2_PRESS;
-  52   3              }
-  53   2              if (KEY3 == 0)
-  54   2              {
-C51 COMPILER V9.54   MAIN                                                                  11/27/2022 16:34:34 PAGE 2   
-
-  55   3                  return KEY3_PRESS;
-  56   3              }
-  57   2              if (KEY4 == 0)
-  58   2              {
-  59   3                  return KEY1_PRESS;
-  60   3              }
-  61   2          }
-  62   1          //当四个按键全部都变成1 高电平的时候 才将key 重新置为1
-  63   1          else if (KEY1 == 1 && KEY2 == 1 && KEY3 == 1 && KEY4 == 1)
-  64   1          {
-  65   2              key = 1;
-  66   2          }
-  67   1          return KEY_UNPRESS;
-  68   1      }
-  69          
-  70          int main()
-  71          {
-  72   1          static u8 key = 1;
-  73   1      
-  74   1          while (1)
-  75   1          {
-  76   2              key = key_scan(0);
-  77   2              if (key == KEY1_PRESS)
-  78   2              {
-  79   3                  LED1 = !LED1;
-  80   3              }
-  81   2          }
-  82   1          return 0;
-  83   1      }
-*** WARNING C294 IN LINE 82 OF main.c: unreachable code
+  41   1      
+  42   1          return 0;
+  43   1      }
+*** WARNING C294 IN LINE 42 OF main.c: unreachable code
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    103    ----
+   CODE SIZE        =     73    ----
    CONSTANT SIZE    =   ----    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =      2    ----
+   DATA SIZE        =   ----    ----
+C51 COMPILER V9.54   MAIN                                                                  11/28/2022 19:14:02 PAGE 2   
+
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

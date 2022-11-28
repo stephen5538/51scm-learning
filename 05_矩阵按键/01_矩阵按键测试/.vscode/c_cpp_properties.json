@@ -3,8 +3,7 @@
         {
             "name": "Target 1",
             "includePath": [
-                "C:\\dev\\Keil5For51\\C51\\INC",
-                "c:\\embadded\\51scm-learning\\05_矩阵按键\\01_矩阵按键测试"
+                "d:\\embadded\\51scm-learning\\05_矩阵按键\\01_矩阵按键测试"
             ],
             "defines": [
                 "__C51__",
