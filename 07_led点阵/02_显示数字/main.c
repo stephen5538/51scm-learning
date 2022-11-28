@@ -1,0 +1,54 @@
+#include <reg52.h>
+typedef unsigned int u16;
+typedef unsigned char u8;
+//定义 74HC595 控制管脚
+sbit SRCLK = P3 ^ 6; //移位寄存器时钟输入
+sbit RCLK = P3 ^ 5;  //存储寄存器时钟输入
+sbit SER = P3 ^ 4;
+#define LEDDZ_COL_PORT P0 //点阵列控制端口
+// LED 点阵显示数字 0 的行数据
+u8 gled_row[8] = {0x00, 0x7C, 0x82, 0x82, 0x82, 0x7C, 0x00, 0x00};
+// LED 点阵显示数字 0 的列数据
+u8 gled_col[8] = {0x7f, 0xbf, 0xdf, 0xef, 0xf7, 0xfb, 0xfd, 0xfe};
+
+void delay_10us(u16 ten_us)
+{
+    while (ten_us--)
+    {
+    }
+}
+void hc595_write_data(u8 dat)
+{
+    u8 i = 0;
+    for (i = 0; i < 8; i++) //循环 8 次即可将一个字节写入寄存器中
+    {
+        SER = dat >> 7; //优先传输一个字节中的高位
+        dat <<= 1;      //将低位移动到高位
+        SRCLK = 0;
+        delay_10us(1);
+        SRCLK = 1;
+        delay_10us(1); //移位寄存器时钟上升沿将端口数据送入寄存器中
+    }
+    RCLK = 0;
+    delay_10us(1);
+    RCLK = 1; //存储寄存器时钟上升沿将前面写入到寄存器的数据输出
+}
+
+int main()
+{
+    u8 i = 0;
+    LEDDZ_COL_PORT = 0x7f;
+    while (1)
+    {
+        for (i = 0; i < 8; i++)
+        {
+            hc595_write_data(gled_row[i]);
+            LEDDZ_COL_PORT = gled_col[i];
+            delay_10us(100);
+            //消影
+            hc595_write_data(0);
+        }
+    }
+
+    return 0;
+}
