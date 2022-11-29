@@ -1,0 +1,74 @@
+C51 COMPILER V9.54   MAIN                                                                  11/28/2022 23:07:59 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
+OBJECT MODULE PLACED IN .\Objects\main.obj
+COMPILER INVOKED BY: E:\dev\keil5for51\C51\BIN\C51.EXE main.c OPTIMIZE(8,SPEED) BROWSE DEBUG OBJECTEXTEND PRINT(.\Listin
+                    -gs\main.lst) TABS(2) OBJECT(.\Objects\main.obj)
+
+line level    source
+
+   1          #include <reg52.h>
+   2          typedef unsigned int u16;
+   3          typedef unsigned char u8;
+   4          
+   5          sbit LED1 = P2 ^ 0;
+   6          
+   7          void delay_10us(u16 ten_us)
+   8          {
+   9   1          while (ten_us--)
+  10   1              ;
+  11   1      }
+  12          
+  13          void time0_init()
+  14          {
+  15   1          TMOD |= 0x01; //选择为定时器 0 模式，工作方式 1
+  16   1          //定时器初始值
+  17   1          TH0 = 0xFC;
+  18   1          TL0 = 0x18;
+  19   1          ET0 = 1; //打开定时器0中断
+  20   1          EA = 1;  //打开总中断
+  21   1          TR0 = 1; //打开定时器0
+  22   1      }
+  23          
+  24          int main()
+  25          {
+  26   1          time0_init();
+  27   1      
+  28   1          while (1)
+  29   1          {
+  30   2              /* code */
+  31   2          }
+  32   1      
+  33   1          return 0;
+  34   1      }
+  35          
+  36          void timer0() interrupt 1
+  37          {
+  38   1          static u16 i;
+  39   1          TH0 = 0xFC;
+  40   1          TL0 = 0x18;
+  41   1          i++;
+  42   1          if (i == 1000)
+  43   1          {
+  44   2              i = 0;
+  45   2              LED1 = !LED1;
+  46   2          }
+  47   1      }
+*** WARNING C294 IN LINE 33 OF main.c: unreachable code
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =     71    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+C51 COMPILER V9.54   MAIN                                                                  11/28/2022 23:07:59 PAGE 2   
+
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =      2    ----
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  1 WARNING(S),  0 ERROR(S)

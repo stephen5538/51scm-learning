@@ -1,0 +1,3 @@
+".\Objects\main.obj" 
+TO ".\Objects\tempalte" 
+PRINT(".\Listings\tempalte.m51") RAMSIZE(256) 
