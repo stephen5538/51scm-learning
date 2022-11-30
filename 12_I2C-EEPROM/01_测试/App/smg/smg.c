@@ -1,36 +1,65 @@
 #include "smg.h"
-
-//¹²Òõ¼«ÊıÂë¹ÜÏÔÊ¾0~FµÄ¶ÎÂëÊı¾İ
-u8 gsmg_code[17]={0x3f,0x06,0x5b,0x4f,0x66,0x6d,0x7d,0x07,
-				0x7f,0x6f,0x77,0x7c,0x39,0x5e,0x79,0x71};
-
-/*******************************************************************************
-* º¯ Êı Ãû       : smg_display
-* º¯Êı¹¦ÄÜ		 : ¶¯Ì¬ÊıÂë¹ÜÏÔÊ¾
-* Êä    Èë       : dat£ºÒªÏÔÊ¾µÄÊı¾İ
-				   pos£º´Ó×ó¿ªÊ¼µÚ¼¸¸öÎ»ÖÃ¿ªÊ¼ÏÔÊ¾£¬·¶Î§1-8
-* Êä    ³ö    	 : ÎŞ
-*******************************************************************************/
-void smg_display(u8 dat[],u8 pos)
+//å…±é˜´ææ•°ç ç®¡æ˜¾ç¤º 0-F çš„æ–­ç æ•°æ®
+u8 gsmg_code[17] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07,
+					0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0x79, 0x71};
+/**
+ * @brief
+ *
+ * @param dat è¦æ˜¾ç¤ºçš„æ•°æ®
+ * @param pos ä»å·¦å¼€å§‹ç¬¬å‡ ä¸ªä½ç½®å¼€å§‹æ˜¾ç¤ºï¼ŒèŒƒå›´1-8
+ */
+void smg_display(u8 dat[], u8 pos)
 {
-	u8 i=0;
-	u8 pos_temp=pos-1;
+	u8 i = 0;
+	u8 pos_temp = pos - 1;
 
-	for(i=pos_temp;i<8;i++)
+	for (i = pos_temp; i < 8; i++)
 	{
-	   	switch(i)//Î»Ñ¡
+		switch (i)
 		{
-			case 0: LSC=1;LSB=1;LSA=1;break;
-			case 1: LSC=1;LSB=1;LSA=0;break;
-			case 2: LSC=1;LSB=0;LSA=1;break;
-			case 3: LSC=1;LSB=0;LSA=0;break;
-			case 4: LSC=0;LSB=1;LSA=1;break;
-			case 5: LSC=0;LSB=1;LSA=0;break;
-			case 6: LSC=0;LSB=0;LSA=1;break;
-			case 7: LSC=0;LSB=0;LSA=0;break;
+		case 0:
+			LSC = 1;
+			LSB = 1;
+			LSA = 1;
+			break;
+		case 1:
+			LSC = 1;
+			LSB = 1;
+			LSA = 0;
+			break;
+		case 2:
+			LSC = 1;
+			LSB = 0;
+			LSA = 1;
+			break;
+		case 3:
+			LSC = 1;
+			LSB = 0;
+			LSA = 0;
+			break;
+		case 4:
+			LSC = 0;
+			LSB = 1;
+			LSA = 1;
+			break;
+		case 5:
+			LSC = 0;
+			LSB = 1;
+			LSA = 0;
+			break;
+		case 6:
+			LSC = 0;
+			LSB = 0;
+			LSA = 1;
+			break;
+		case 7:
+			LSC = 0;
+			LSB = 0;
+			LSA = 0;
+			break;
 		}
-		SMG_A_DP_PORT=gsmg_code[dat[i-pos_temp]];//´«ËÍ¶ÎÑ¡Êı¾İ
-		delay_10us(100);//ÑÓÊ±Ò»¶ÎÊ±¼ä£¬µÈ´ıÏÔÊ¾ÎÈ¶¨
-		SMG_A_DP_PORT=0x00;//ÏûÒô
+		SMG_A_DP_PORT = gsmg_code[dat[i - pos_temp]];
+		delay_10us(100);
+		SMG_A_DP_PORT = 0x00;
 	}
 }

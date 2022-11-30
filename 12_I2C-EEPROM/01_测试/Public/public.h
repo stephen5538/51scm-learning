@@ -3,7 +3,7 @@
 
 #include "reg52.h"
 
-typedef unsigned int u16;	//对系统默认数据类型进行重定义
+typedef unsigned int u16;
 typedef unsigned char u8;
 
 

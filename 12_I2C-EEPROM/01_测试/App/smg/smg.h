@@ -2,16 +2,14 @@
 #define _smg_H
 
 #include "public.h"
+//æ•°ç ç®¡æ®µé€‰å¼•è„š
+#define SMG_A_DP_PORT P0
 
+//æ•°ç ç®¡ä½é€‰å¼•è„š
+sbit LSA = P2 ^ 2;
+sbit LSB = P2 ^ 3;
+sbit LSC = P2 ^ 4;
 
-#define SMG_A_DP_PORT	P0	//Ê¹ÓÃºê¶¨ÒåÊıÂë¹Ü¶ÎÂë¿Ú
-
-//¶¨ÒåÊıÂë¹ÜÎ»Ñ¡ĞÅºÅ¿ØÖÆ½Å
-sbit LSA=P2^2;
-sbit LSB=P2^3;
-sbit LSC=P2^4;
-
-
-void smg_display(u8 dat[],u8 pos);
+void smg_display(u8 dat[], u8 pos);
 
 #endif

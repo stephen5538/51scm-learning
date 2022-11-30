@@ -1,46 +1,41 @@
 #include "24c02.h"
 #include "iic.h"
-
-
-/*******************************************************************************
-* º¯ Êı Ãû         : at24c02_write_one_byte
-* º¯Êı¹¦ÄÜ		   : ÔÚAT24CXXÖ¸¶¨µØÖ·Ğ´ÈëÒ»¸öÊı¾İ
-* Êä    Èë         : addr:Ğ´ÈëÊı¾İµÄÄ¿µÄµØÖ· 
-					 dat:ÒªĞ´ÈëµÄÊı¾İ
-* Êä    ³ö         : ÎŞ
-*******************************************************************************/
-void at24c02_write_one_byte(u8 addr,u8 dat)
-{				   	  	    																 
-    iic_start();  
-	iic_write_byte(0XA0);	//·¢ËÍĞ´ÃüÁî	    	  
-	iic_wait_ack();	   
-    iic_write_byte(addr);	//·¢ËÍĞ´µØÖ·   
-	iic_wait_ack(); 	 										  		   
-	iic_write_byte(dat);	//·¢ËÍ×Ö½Ú    							   
-	iic_wait_ack();  		    	   
-    iic_stop();				//²úÉúÒ»¸öÍ£Ö¹Ìõ¼ş
-	delay_ms(10);	 
+/**
+ * @brief åœ¨ AT24CXX æŒ‡å®šåœ°å€å†™å…¥ä¸€ä¸ªæ•°æ®
+ *
+ * @param addr å†™å…¥æ•°æ®çš„ç›®çš„åœ°å€
+ * @param dat :è¦å†™å…¥çš„æ•°æ®
+ */
+void at24c02_write_one_byte(u8 addr, u8 dat)
+{
+	iic_start();
+	iic_write_byte(0XA0);
+	iic_wait_ack();
+	iic_write_byte(addr);
+	iic_wait_ack();
+	iic_write_byte(dat);
+	iic_wait_ack();
+	iic_stop();
+	delay_ms(10);
 }
-
-/*******************************************************************************
-* º¯ Êı Ãû         : at24c02_read_one_byte
-* º¯Êı¹¦ÄÜ		   : ÔÚAT24CXXÖ¸¶¨µØÖ·¶Á³öÒ»¸öÊı¾İ
-* Êä    Èë         : addr:¿ªÊ¼¶ÁÊıµÄµØÖ· 
-* Êä    ³ö         : ¶Áµ½µÄÊı¾İ
-*******************************************************************************/
+/**
+ * @brief åœ¨ AT24CXX æŒ‡å®šåœ°å€è¯»å‡ºä¸€ä¸ªæ•°æ®
+ *
+ * @param  addr:å¼€å§‹è¯»æ•°çš„åœ°å€
+ * @return u8 è¯»åˆ°çš„æ•°æ®
+ */
 u8 at24c02_read_one_byte(u8 addr)
-{				  
-	u8 temp=0;		  	    																 
-    iic_start();  
-	iic_write_byte(0XA0);	//·¢ËÍĞ´ÃüÁî	   
-	iic_wait_ack(); 
-    iic_write_byte(addr); 	//·¢ËÍĞ´µØÖ·  
-	iic_wait_ack();	    
-	iic_start();  	 	   
-	iic_write_byte(0XA1); 	//½øÈë½ÓÊÕÄ£Ê½         			   
-	iic_wait_ack();	 
-    temp=iic_read_byte(0);	//¶ÁÈ¡×Ö½Ú		   
-    iic_stop();				//²úÉúÒ»¸öÍ£Ö¹Ìõ¼ş    
-	return temp;			//·µ»Ø¶ÁÈ¡µÄÊı¾İ
+{
+	u8 temp = 0;
+	iic_start();
+	iic_write_byte(0XA0);
+	iic_wait_ack();
+	iic_write_byte(addr);
+	iic_wait_ack();
+	iic_start();
+	iic_write_byte(0XA1);
+	iic_wait_ack();
+	temp = iic_read_byte(0);
+	iic_stop();
+	return temp;
 }
-

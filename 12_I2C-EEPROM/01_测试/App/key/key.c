@@ -1,37 +1,46 @@
 #include "key.h"
-
-/*******************************************************************************
-* º¯ Êı Ãû       : key_scan
-* º¯Êı¹¦ÄÜ		 : ¼ì²â¶ÀÁ¢°´¼üÊÇ·ñ°´ÏÂ£¬°´ÏÂÔò·µ»Ø¶ÔÓ¦¼üÖµ
-* Êä    Èë       : mode=0£ºµ¥´ÎÉ¨Ãè°´¼ü
-				   mode=1£ºÁ¬ĞøÉ¨Ãè°´¼ü
-* Êä    ³ö    	 : KEY1_PRESS£ºK1°´ÏÂ
-				   KEY2_PRESS£ºK2°´ÏÂ
-				   KEY3_PRESS£ºK3°´ÏÂ
-				   KEY4_PRESS£ºK4°´ÏÂ
-				   KEY_UNPRESS£ºÎ´ÓĞ°´¼ü°´ÏÂ
-*******************************************************************************/
+/**
+ * @brief æ£€æµ‹ç‹¬ç«‹æŒ‰é”®æ˜¯å¦æŒ‰ä¸‹ï¼ŒæŒ‰ä¸‹åˆ™è¿”å›å¯¹åº”é”®å€¼
+ *
+ * @param mode
+ * 			mode=0ï¼šå•æ¬¡æ‰«ææŒ‰é”®
+ *			mode=1ï¼šè¿ç»­æ‰«ææŒ‰é”®
+ * @return u8
+ * 			KEY1_PRESSï¼šK1 æŒ‰ä¸‹
+ *			KEY2_PRESSï¼šK2 æŒ‰ä¸‹
+ *			KEY3_PRESSï¼šK3 æŒ‰ä¸‹
+ *			KEY4_PRESSï¼šK4 æŒ‰ä¸‹
+ *			KEY_UNPRESSï¼šæœªæœ‰æŒ‰é”®æŒ‰ä¸‹
+ */
 u8 key_scan(u8 mode)
 {
-	static u8 key=1;
+	//é™æ€å…¨å±€å˜é‡
+	static u8 key = 1;
+	//å¦‚æœä¸º1 å°†key é‡ç½®ä¸º1 è¿™æ ·æ°¸è¿œä¼šèµ°if
+	//å¦‚æœä¸º0 ç¬¬ä¸€æ¬¡èµ°if ä¹‹åè¦ç­‰ç”¨æˆ·æ¾æ‰‹ ç­‰æ‰€æœ‰æŒ‰é”®å˜æˆé«˜ç”µå¹³ æ‰ä¼šèµ°else if å°†keyç½®ä¸º1
+	if (mode)
+	{
+		key = 1;
+	}
 
-	if(mode)key=1;//Á¬ĞøÉ¨Ãè°´¼ü
-	if(key==1&&(KEY1==0||KEY2==0||KEY3==0||KEY4==0))//ÈÎÒâ°´¼ü°´ÏÂ
+	if (key == 1 && (KEY1 == 0 || KEY2 == 0 || KEY3 == 0 || KEY4 == 0))
 	{
-		delay_10us(1000);//Ïû¶¶
-		key=0;
-		if(KEY1==0)
+		delay_10us(1000);
+		//ç½®0
+		key = 0;
+		if (KEY1 == 0)
 			return KEY1_PRESS;
-		else if(KEY2==0)
+		else if (KEY2 == 0)
 			return KEY2_PRESS;
-		else if(KEY3==0)
+		else if (KEY3 == 0)
 			return KEY3_PRESS;
-		else if(KEY4==0)
-			return KEY4_PRESS;	
+		else if (KEY4 == 0)
+			return KEY4_PRESS;
 	}
-	else if(KEY1==1&&KEY2==1&&KEY3==1&&KEY4==1)	//ÎŞ°´¼ü°´ÏÂ
+	else if (KEY1 == 1 && KEY2 == 1 && KEY3 == 1 && KEY4 == 1)
 	{
-		key=1;			
+		//ç½®1
+		key = 1;
 	}
-	return KEY_UNPRESS;		
+	return KEY_UNPRESS;
 }
