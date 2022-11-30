@@ -1,6 +1,10 @@
 {
     "files.associations": {
         "24c02.h": "c",
-        "public.h": "c"
+        "public.h": "c",
+        "ds1302.h": "c",
+        "intrin.h": "c",
+        "ds18b20.h": "c",
+        "smg.h": "c"
     }
 }

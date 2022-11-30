@@ -1,80 +1,60 @@
-C51 COMPILER V9.54   MAIN                                                                  11/29/2022 16:45:00 PAGE 1   
+C51 COMPILER V9.54   MAIN                                                                  11/30/2022 22:14:35 PAGE 1   
 
 
 C51 COMPILER V9.54, COMPILATION OF MODULE MAIN
 OBJECT MODULE PLACED IN .\Obj\main.obj
-COMPILER INVOKED BY: C:\dev\Keil5For51\C51\BIN\C51.EXE User\main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Public;.\App\24c02;
-                    -.\App\iic;.\App\key;.\App\smg) DEBUG OBJECTEXTEND PRINT(.\Obj\main.lst) TABS(2) OBJECT(.\Obj\main.obj)
+COMPILER INVOKED BY: E:\dev\keil5for51\C51\BIN\C51.EXE User\main.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Public;.\App\24c02;
+                    -.\App\iic;.\App\key;.\App\smg;.\App\ds18b20) DEBUG OBJECTEXTEND PRINT(.\Obj\main.lst) TABS(2) OBJECT(.\Obj\main.obj)
 
 line level    source
 
-   1          /**************************************************************************************
-   2          …Ó€⁄ –∆’÷–ø∆ºº”–œﬁπ´Àæ£®PRECHIN ∆’÷–£©
-   3          ºº ı÷ß≥÷£∫www.prechin.net
+   1          #include "public.h"
+   2          #include "ds18b20.h"
+   3          #include "smg.h"
    4          
-   5           µ—È√˚≥∆£∫I2C-EEPROM µ—È
-   6          Ω”œﬂÀµ√˜£∫  
-   7           µ—Èœ÷œÛ£∫œ¬‘ÿ≥Ã–Ú∫Û£¨ ˝¬Îπ‹”“4Œªœ‘ æ0£¨∞¥K1º¸Ω´ ˝æ›–¥»ÎµΩEEPROMƒ⁄±£¥Ê£¨
-   8                ∞¥K2º¸∂¡»°EEPROMƒ⁄±£¥Êµƒ ˝æ›£¨∞¥K3º¸œ‘ æ ˝æ›º”1£¨∞¥K4º¸œ‘ æ ˝æ›«Â¡„£¨
-   9                ◊Ó¥Ûƒ‹–¥»Îµƒ ˝æ› «255°£
-  10          ◊¢“‚ ¬œÓ£∫                                          
-  11          ***************************************************************************************/
-  12          #include "public.h"
-  13          #include "24c02.h"
-  14          #include "key.h"
-  15          #include "smg.h"
-  16          
-  17          
-  18          #define EEPROM_ADDRESS  0 //∂®“Â ˝æ›¥Ê»ÎEEPROMµƒ∆ ºµÿ÷∑
-  19          
-  20          /*******************************************************************************
-  21          * ∫Ø  ˝ √˚       : main
-  22          * ∫Ø ˝π¶ƒ‹     : ÷˜∫Ø ˝
-  23          *  ‰    »Î       : Œﬁ
-  24          *  ‰    ≥ˆ       : Œﬁ
-  25          *******************************************************************************/
-  26          void main()
-  27          { 
-  28   1        u8 key_temp=0;
-  29   1          u8 save_value=0;
-  30   1        u8 save_buf[3];
-  31   1      
-  32   1        while(1)
-  33   1        {     
-  34   2          key_temp=key_scan(0);
-  35   2          if(key_temp==KEY1_PRESS)
-  36   2          {
-  37   3            at24c02_write_one_byte(EEPROM_ADDRESS,save_value);
-  38   3          }
-  39   2          else if(key_temp==KEY2_PRESS)
-  40   2          {
-  41   3            save_value=at24c02_read_one_byte(EEPROM_ADDRESS);
-  42   3          }
-  43   2          else if(key_temp==KEY3_PRESS)
-  44   2          {
-  45   3            save_value++;
-  46   3            if(save_value==255)save_value=255;
-  47   3          }
-  48   2          else if(key_temp==KEY4_PRESS)
-  49   2          {
-  50   3            save_value=0; 
-  51   3          }
-  52   2          save_buf[0]=save_value/100;
-  53   2          save_buf[1]=save_value%100/10;
-  54   2          save_buf[2]=save_value%100%10;
-C51 COMPILER V9.54   MAIN                                                                  11/29/2022 16:45:00 PAGE 2   
-
-  55   2          smg_display(save_buf,6);
-  56   2        }   
-  57   1      }
+   5          void main()
+   6          {
+   7   1        u8 i = 0;
+   8   1        int temp_value;
+   9   1        u8 temp_buf[5];
+  10   1          u8 gsmg_code[17] = {0x3f, 0x06, 0x5b, 0x4f, 0x66, 0x6d, 0x7d, 0x07,0x7f, 0x6f, 0x77, 0x7c, 0x39, 0x5e, 0
+             -x79, 0x71};
+  11   1      
+  12   1        ds18b20_init();
+  13   1      
+  14   1        while (1)
+  15   1        {
+  16   2          i++;
+  17   2          //Èó¥Èöî‰∏ÄÊÆµÊó∂Èó¥ËØªÂèñÊ∏©Â∫¶ÂÄºÔºåÈó¥ÈöîÊó∂Èó¥Ë¶ÅÂ§ß‰∫éÊ∏©Â∫¶‰º†ÊÑüÂô®ËΩ¨Êç¢Ê∏©Â∫¶Êó∂Èó¥
+  18   2          if (i % 50 == 0)
+  19   2          {
+  20   3            //‰øùÁïôÊ∏©Â∫¶ÂÄºÂ∞èÊï∞Âêé‰∏Ä‰Ωç
+  21   3            temp_value = ds18b20_read_temperture() * 10;
+  22   3          }
+  23   2          if (temp_value < 0)
+  24   2          {
+  25   3            temp_value = -temp_value;
+  26   3            temp_buf[0] = 0x40;
+  27   3          }
+  28   2          else
+  29   2          {
+  30   3            temp_buf[0] = 0x00;
+  31   3          }
+  32   2          temp_buf[1] = gsmg_code[temp_value / 1000];           //Áôæ‰Ωç
+  33   2          temp_buf[2] = gsmg_code[temp_value % 1000 / 100];       //ÂçÅ‰Ωç
+  34   2          temp_buf[3] = gsmg_code[temp_value % 1000 % 100 / 10] | 0x80; //‰∏™‰Ωç+Â∞èÊï∞ÁÇπ
+  35   2          temp_buf[4] = gsmg_code[temp_value % 1000 % 100 % 10];      //Â∞èÊï∞ÁÇπÂêé‰∏Ä‰Ωç
+  36   2          smg_display(temp_buf, 4);
+  37   2        }
+  38   1      }
 
 
 MODULE INFORMATION:   STATIC OVERLAYABLE
-   CODE SIZE        =    109    ----
-   CONSTANT SIZE    =   ----    ----
+   CODE SIZE        =    201    ----
+   CONSTANT SIZE    =     17    ----
    XDATA SIZE       =   ----    ----
    PDATA SIZE       =   ----    ----
-   DATA SIZE        =   ----       5
+   DATA SIZE        =   ----      25
    IDATA SIZE       =   ----    ----
    BIT SIZE         =   ----    ----
 END OF MODULE INFORMATION.

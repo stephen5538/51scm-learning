@@ -1,0 +1,223 @@
+C51 COMPILER V9.54   DS18B20                                                               11/30/2022 22:14:35 PAGE 1   
+
+
+C51 COMPILER V9.54, COMPILATION OF MODULE DS18B20
+OBJECT MODULE PLACED IN .\Obj\ds18b20.obj
+COMPILER INVOKED BY: E:\dev\keil5for51\C51\BIN\C51.EXE App\ds18b20\ds18b20.c OPTIMIZE(8,SPEED) BROWSE INCDIR(.\Public;.\
+                    -App\24c02;.\App\iic;.\App\key;.\App\smg;.\App\ds18b20) DEBUG OBJECTEXTEND PRINT(.\Obj\ds18b20.lst) TABS(2) OBJECT(.\Obj\
+                    -ds18b20.obj)
+
+line level    source
+
+   1          #include <ds18b20.h>
+   2          #include "intrins.h"
+   3          /**
+   4           * @brief   复位 DS18B20
+   5           * 主机输出低电平，保持低电平
+   6           * 时间至少 480us（该时间的时间范围可以从 480 到 960 微妙），以产生复位脉
+   7           * 冲。接着主机释放总线，外部的上拉电阻将单总线拉高，延时 15～60 us，并进
+   8           * 入接收模式
+   9           *
+  10           */
+  11          void ds18b20_reset()
+  12          {
+  13   1          DS18B20_PORT = 0; //拉低DQ
+  14   1          delay_10us(75);
+  15   1          DS18B20_PORT = 1;
+  16   1          delay_10us(2);
+  17   1      }
+  18          
+  19          /**
+  20           * @brief 检测 DS18B20 是否存在
+  21           *
+  22           * @return u8 1:未检测到 DS18B20 的存在，0:存在
+  23           */
+  24          u8 ds18b20_check()
+  25          {
+  26   1          //超时时间次数
+  27   1          u8 time_temp = 0;
+  28   1          //等待 DQ 为低电平
+  29   1          while (DS18B20_PORT && time_temp < 20)
+  30   1          {
+  31   2              time_temp++;
+  32   2              delay_10us(1);
+  33   2          }
+  34   1          if (time_temp >= 20)
+  35   1          {
+  36   2              return 1;
+  37   2          }
+  38   1          time_temp = 0;
+  39   1          while (!DS18B20_PORT && time_temp < 20)
+  40   1          {
+  41   2              time_temp++;
+  42   2              delay_10us(1);
+  43   2          }
+  44   1          if (time_temp >= 20)
+  45   1          {
+  46   2              return 1;
+  47   2          }
+  48   1          return 0;
+  49   1      }
+  50          
+  51          /**
+  52           * @brief 从ds18b20 读取一位 bit
+  53           *
+C51 COMPILER V9.54   DS18B20                                                               11/30/2022 22:14:35 PAGE 2   
+
+  54           *  主机输出低电平延时 2us，然后主机转入输入模式延
+  55           *   时  2us，然后读取单总线当前的电平，然后延时 50us
+  56           * @return u8
+  57           */
+  58          u8 ds18b20_read_bit()
+  59          {
+  60   1          u8 dat = 0;
+  61   1          //拉低总线
+  62   1          DS18B20_PORT = 0;
+  63   1          _nop_();          // 1us
+  64   1          _nop_();          // 1us
+  65   1          DS18B20_PORT = 1; //释放总线
+  66   1          _nop_();
+  67   1          _nop_(); //该段时间不能过长，必须在15us内读取数据
+  68   1          //读取从机发送的数据
+  69   1          if (DS18B20_PORT)
+  70   1          {
+  71   2              dat = 1;
+  72   2          }
+  73   1          else
+  74   1          {
+  75   2              dat = 0;
+  76   2          }
+  77   1          delay_10us(5);
+  78   1          return dat;
+  79   1      }
+  80          /**
+  81           * @brief 读取一个字节
+  82           *
+  83           * @return u8
+  84           */
+  85          u8 ds18b20_read_byte()
+  86          {
+  87   1          u8 i = 0;
+  88   1          u8 dat = 0;
+  89   1          u8 temp = 0;
+  90   1          //循环8次，每次读取一位，且先读低位再读高位
+  91   1          for (i = 0; i < 8; i++)
+  92   1          {
+  93   2              temp = ds18b20_read_bit();
+  94   2              //右移一位 将最高放入次高位
+  95   2              dat = dat >> 1;
+  96   2              dat = dat | (temp << 7);
+  97   2          }
+  98   1          return dat;
+  99   1      }
+ 100          
+ 101          /**
+ 102           * @brief 写一个字节到DS18B20
+ 103           *
+ 104           * @param dat 一个字节
+ 105           */
+ 106          void ds18b20_write_byte(u8 dat)
+ 107          {
+ 108   1          u8 i = 0;
+ 109   1          u8 temp = 0;
+ 110   1      
+ 111   1          for (i = 0; i < 8; i++)
+ 112   1          {
+ 113   2              temp = dat & 0x01;
+ 114   2              dat=dat >> 1; //高位移动低位
+ 115   2              if (temp)
+C51 COMPILER V9.54   DS18B20                                                               11/30/2022 22:14:35 PAGE 3   
+
+ 116   2              {
+ 117   3                  DS18B20_PORT = 0;
+ 118   3                  _nop_();
+ 119   3                  _nop_();
+ 120   3                  DS18B20_PORT = 1;
+ 121   3                  delay_10us(6);
+ 122   3              }
+ 123   2              else
+ 124   2              {
+ 125   3                  DS18B20_PORT = 0;
+ 126   3                  delay_10us(6);
+ 127   3                  DS18B20_PORT = 1;
+ 128   3                  _nop_();
+ 129   3                  _nop_();
+ 130   3              }
+ 131   2          }
+ 132   1      }
+ 133          
+ 134          /**
+ 135           * @brief 初始化 DS18B20 的 IO 口 DQ 同时检测 DS 的存在
+ 136           *
+ 137           * @return u8 1:不存在，0:存在
+ 138           */
+ 139          u8 ds18b20_init(void)
+ 140          {
+ 141   1          ds18b20_reset();
+ 142   1          return ds18b20_check();
+ 143   1      }
+ 144          
+ 145          /**
+ 146           * @brief 开始温度转换
+ 147           *
+ 148           */
+ 149          void ds18b20_start()
+ 150          {
+ 151   1          ds18b20_reset();          //复位
+ 152   1          ds18b20_check();          //检查ds18b20 是否存在
+ 153   1          ds18b20_write_byte(0xcc); // SKIP ROM
+ 154   1          ds18b20_write_byte(0x44); //转换命令
+ 155   1      }
+ 156          
+ 157          /**
+ 158           * @brief 从 ds18b20 得到温度值
+ 159           *
+ 160           * @return float 温度数据
+ 161           */
+ 162          float ds18b20_read_temperture()
+ 163          {
+ 164   1          float temp;
+ 165   1          //高位温度
+ 166   1          u8 dath = 0;
+ 167   1          //地位温度
+ 168   1          u8 datl = 0;
+ 169   1          u16 value = 0;
+ 170   1      
+ 171   1          ds18b20_start();
+ 172   1          ds18b20_reset();          //复位
+ 173   1          ds18b20_check();          //检查ds18b20 是否存在
+ 174   1          ds18b20_write_byte(0xcc); // SKIP ROM
+ 175   1          ds18b20_write_byte(0xbe); //读存储器
+ 176   1      
+ 177   1          datl = ds18b20_read_byte(); //低字节
+C51 COMPILER V9.54   DS18B20                                                               11/30/2022 22:14:35 PAGE 4   
+
+ 178   1          dath = ds18b20_read_byte(); //高字节
+ 179   1      
+ 180   1          value = (dath << 8) + datl; //合并为16位数据
+ 181   1      
+ 182   1          if ((value & 0xf800) == 0xf800) //判断符号位，负温度
+ 183   1          {
+ 184   2              value = (~value) + 1;     //数据取反再加1
+ 185   2              temp = value * (-0.0625); //乘以精度
+ 186   2          }
+ 187   1          else //正温度
+ 188   1          {
+ 189   2              temp = value * 0.0625;
+ 190   2          }
+ 191   1          return temp;
+ 192   1      }
+
+
+MODULE INFORMATION:   STATIC OVERLAYABLE
+   CODE SIZE        =    368    ----
+   CONSTANT SIZE    =   ----    ----
+   XDATA SIZE       =   ----    ----
+   PDATA SIZE       =   ----    ----
+   DATA SIZE        =   ----      14
+   IDATA SIZE       =   ----    ----
+   BIT SIZE         =   ----    ----
+END OF MODULE INFORMATION.
+
+
+C51 COMPILATION COMPLETE.  0 WARNING(S),  0 ERROR(S)

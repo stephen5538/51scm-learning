@@ -111,7 +111,7 @@ void ds18b20_write_byte(u8 dat)
     for (i = 0; i < 8; i++)
     {
         temp = dat & 0x01;
-        dat >> 1; //高位移动低位
+        dat=dat >> 1; //高位移动低位
         if (temp)
         {
             DS18B20_PORT = 0;

@@ -56,8 +56,7 @@ void smg_display(u8 dat[], u8 pos)
 			LSA = 0;
 			break;
 		}
-		// SMG_A_DP_PORT = gsmg_code[dat[i - pos_temp]];
-		SMG_A_DP_PORT = dat[i - pos_temp];
+ 		SMG_A_DP_PORT = dat[i - pos_temp];
 		delay_10us(100);
 		SMG_A_DP_PORT = 0x00;
 	}

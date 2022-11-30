@@ -311,7 +311,7 @@
               <MiscControls></MiscControls>
               <Define></Define>
               <Undefine></Undefine>
-              <IncludePath>.\Public;.\App\24c02;.\App\iic;.\App\key;.\App\smg</IncludePath>
+              <IncludePath>.\Public;.\App\24c02;.\App\iic;.\App\key;.\App\smg;.\App\ds18b20</IncludePath>
             </VariousControls>
           </C51>
           <Ax51>
@@ -392,6 +392,11 @@
               <FileName>key.c</FileName>
               <FileType>1</FileType>
               <FilePath>.\App\key\key.c</FilePath>
+            </File>
+            <File>
+              <FileName>ds18b20.c</FileName>
+              <FileType>1</FileType>
+              <FilePath>.\App\ds18b20\ds18b20.c</FilePath>
             </File>
           </Files>
         </Group>
