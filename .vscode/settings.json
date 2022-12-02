@@ -5,6 +5,8 @@
         "ds1302.h": "c",
         "intrin.h": "c",
         "ds18b20.h": "c",
-        "smg.h": "c"
+        "smg.h": "c",
+        "xpt2046.h": "c",
+        "pwm.C": "cpp"
     }
 }
